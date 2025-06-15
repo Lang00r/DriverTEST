@@ -154,6 +154,21 @@
     .bar.driver4 { background-color: #9b59b6; }
     .bar.driver5 { background-color: #e74c3c; }
 
+    .driver-description {
+      margin-top: 30px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+      color: #444;
+      font-size: 0.95em;
+      line-height: 1.5;
+    }
+
+    .driver-description h4 {
+      margin-bottom: 8px;
+      color: #2c3e50;
+      font-weight: 700;
+    }
+
     footer {
       margin-top: 60px;
       font-size: 0.85em;
@@ -217,7 +232,7 @@
   </footer>
 
   <script>
-    // 25 вопросов с драйверами
+    // Вопросы (25) и драйверы
     const questions = [
       { text: "Я стараюсь быть первым и добиваться успеха.", driver: "Достижение" },
       { text: "Я часто говорю себе: 'Сделай это сейчас!'.", driver: "Достижение" },
@@ -264,10 +279,25 @@
       "Угождение": "driver5"
     };
 
+    // Описания драйверов, адаптированы из примера
+    const driverDescriptions = {
+      "Достижение": `<h4>Драйвер «Достижение»</h4>
+        <p>Этот драйвер заставляет вас стремиться к успеху и быть лучшим. Вы ставите перед собой высокие цели и упорно идёте к ним. Это помогает достигать результатов, но иногда может приводить к излишнему стрессу и перфекционизму.</p>`,
+      "Совершенство": `<h4>Драйвер «Совершенство»</h4>
+        <p>Вы стремитесь делать всё идеально и без ошибок. Этот драйвер помогает поддерживать высокие стандарты, но может приводить к самокритике и затягиванию выполнения задач из-за желания всё сделать идеально.</p>`,
+      "Сила": `<h4>Драйвер «Сила»</h4>
+        <p>Вы стараетесь быть сильным, независимым и контролировать ситуацию. Этот драйвер помогает справляться с трудностями, но иногда мешает просить помощи и выражать свои чувства.</p>`,
+      "Скорость": `<h4>Драйвер «Скорость»</h4>
+        <p>Вы любите делать всё быстро и эффективно, не откладывая дела на потом. Этот драйвер помогает быть продуктивным, но может приводить к спешке и поверхностному выполнению задач.</p>`,
+      "Угождение": `<h4>Драйвер «Угождение»</h4>
+        <p>Вам важно угождать другим и быть принятым. Этот драйвер помогает поддерживать хорошие отношения, но иногда приводит к подавлению собственных желаний и трудностям в отстаивании своих границ.</p>`
+    };
+
     const form = document.getElementById("testForm");
     const submitBtn = document.getElementById("submitBtn");
     const resultDiv = document.getElementById("result");
 
+    // Создание вопросов в форме
     function renderQuestions() {
       questions.forEach((q, index) => {
         const questionDiv = document.createElement("div");
@@ -305,6 +335,7 @@
       });
     }
 
+    // Проверка, что все вопросы отвечены
     function checkAllAnswered() {
       const totalQuestions = questions.length;
       let answeredCount = 0;
@@ -317,6 +348,7 @@
       submitBtn.disabled = answeredCount !== totalQuestions;
     }
 
+    // Максимальный балл для каждого драйвера
     function getMaxScorePerDriver() {
       const counts = {};
       drivers.forEach(driver => counts[driver] = 0);
@@ -327,6 +359,7 @@
       return counts;
     }
 
+    // Подсчет и вывод результатов с диаграммами и описаниями
     function calculateResults() {
       const scores = {};
       drivers.forEach(driver => scores[driver] = 0);
@@ -360,11 +393,19 @@
         `;
       });
 
+      // Добавляем описание драйверов
+      resultHTML += `<div class="driver-description">`;
+      drivers.forEach(driver => {
+        resultHTML += driverDescriptions[driver];
+      });
+      resultHTML += `</div>`;
+
       resultDiv.innerHTML = resultHTML;
       resultDiv.style.display = "block";
       resultDiv.scrollIntoView({ behavior: "smooth" });
     }
 
+    // Инициализация
     renderQuestions();
 
     submitBtn.addEventListener("click", e => {
