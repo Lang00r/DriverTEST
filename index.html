@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Тест на определение ведущего драйвера</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #ffffff;
+      color: #222222;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 20px 40px;
+    }
+
+    .highlighted-text {
+      color: #3498db;
+      font-weight: 700;
+      font-size: 2em;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 10px;
+      text-align: center;
+      user-select: none;
+      text-shadow: 0 1px 2px rgba(52, 152, 219, 0.5);
+    }
+
+    h1 {
+      color: #1a1a1a;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .question {
+      background: #fefefe;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      padding: 20px 25px;
+      margin-bottom: 20px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .question:hover {
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+
+    .answers {
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+    }
+
+    label {
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      font-size: 1em;
+      padding: 10px 12px;
+      border-radius: 25px;
+      border: 1px solid #ccc;
+      background-color: #fafafa;
+      transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+      min-width: 80px;
+    }
+
+    input[type="radio"] {
+      display: none;
+    }
+
+    input[type="radio"] + span {
+      display: inline-block;
+      width: 100%;
+    }
+
+    input[type="radio"]:checked + span {
+      background-color: #4a90e2;
+      color: white;
+      border-color: #357ABD;
+      font-weight: 600;
+    }
+
+    button {
+      display: block;
+      margin: 30px auto 0;
+      padding: 14px 30px;
+      font-size: 1.1em;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      max-width: 300px;
+      width: 100%;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #357ABD;
+    }
+
+    button:disabled {
+      background-color: #b0c4de;
+      cursor: not-allowed;
+    }
+
+    #result {
+      background: #f7f9fc;
+      padding: 25px 30px;
+      border-radius: 15px;
+      margin-top: 40px;
+      box-shadow: inset 0 0 15px #d0d7e3;
+      color: #333;
+    }
+
+    .driver-state {
+      margin-bottom: 20px;
+    }
+
+    .driver-state h3 {
+      margin-bottom: 8px;
+      color: #2c3e50;
+      font-weight: 600;
+    }
+
+    .bar-container {
+      background-color: #ddd;
+      border-radius: 20px;
+      overflow: hidden;
+      height: 24px;
+      margin-bottom: 25px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .bar {
+      height: 100%;
+      border-radius: 20px 0 0 20px;
+      text-align: right;
+      padding-right: 10px;
+      color: white;
+      font-weight: 600;
+      line-height: 24px;
+      white-space: nowrap;
+      transition: width 0.6s ease;
+    }
+
+    .bar.driver1 { background-color: #3498db; }
+    .bar.driver2 { background-color: #e67e22; }
+    .bar.driver3 { background-color: #2ecc71; }
+    .bar.driver4 { background-color: #9b59b6; }
+    .bar.driver5 { background-color: #e74c3c; }
+
+    footer {
+      margin-top: 60px;
+      font-size: 0.85em;
+      text-align: center;
+      color: #999;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        margin: 10px;
+        padding: 0 10px;
+        font-size: 16px;
+      }
+      h1 {
+        font-size: 1.5em;
+      }
+      .question {
+        padding: 15px 20px;
+      }
+      .answers {
+        flex-direction: column;
+        gap: 12px;
+      }
+      label {
+        margin-bottom: 8px;
+        font-size: 1.1em;
+        padding: 12px 15px;
+      }
+      button {
+        width: 100%;
+        padding: 16px 0;
+        font-size: 1.2em;
+      }
+      .bar-container {
+        height: 20px;
+      }
+      .bar {
+        line-height: 20px;
+        padding-right: 8px;
+        font-size: 0.9em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="highlighted-text">POGOVORIM</div>
+  <h1>Тест на определение ведущего драйвера</h1>
+  <p style="text-align:center; max-width:600px; margin: 0 auto 30px;">
+    Тест основан на модели драйверов Тайби Кэлера и Джули Хэй. Выберите наиболее подходящий ответ для каждого вопроса.
+  </p>
+
+  <form id="testForm" novalidate></form>
+
+  <button id="submitBtn" disabled>Показать результат</button>
+
+  <div id="result" style="display:none;"></div>
+
+  <footer>
+    © 2025 Тест драйверов. Разработано для публикации на GitHub Pages.
+  </footer>
+
+  <script>
+    // Вопросы и драйверы
+    const questions = [
+      { text: "Я стараюсь быть первым и добиваться успеха.", driver: "Достижение" },
+      { text: "Я часто говорю себе: 'Сделай это сейчас!'.", driver: "Достижение" },
+      { text: "Я стремлюсь к совершенству и точности.", driver: "Совершенство" },
+      { text: "Я стараюсь делать всё правильно и без ошибок.", driver: "Совершенство" },
+      { text: "Я часто говорю себе: 'Будь сильным!'.", driver: "Сила" },
+      { text: "Я не люблю показывать слабость и стараюсь быть независимым.", driver: "Сила" },
+      { text: "Я часто говорю себе: 'Поторопись!'.", driver: "Скорость" },
+      { text: "Я стараюсь делать всё быстро и эффективно.", driver: "Скорость" },
+      { text: "Я часто говорю себе: 'Угождай другим!'.", driver: "Угождение" },
+      { text: "Мне важно, чтобы меня любили и принимали.", driver: "Угождение" }
+    ];
+
+    // Варианты ответов
+    const answerScale = [
+      { label: "НЕТ", value: 0 },
+      { label: "В некоторой степени", value: 1 },
+      { label: "ДА", value: 2 }
+    ];
+
+    // Драйверы и цвета для диаграммы
+    const drivers = ["Достижение", "Совершенство", "Сила", "Скорость", "Угождение"];
+    const driverColors = {
+      "Достижение": "driver1",
+      "Совершенство": "driver2",
+      "Сила": "driver3",
+      "Скорость": "driver4",
+      "Угождение": "driver5"
+    };
+
+    const form = document.getElementById("testForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const resultDiv = document.getElementById("result");
+
+    // Создание вопросов
+    function renderQuestions() {
+      questions.forEach((q, index) => {
+        const questionDiv = document.createElement("div");
+        questionDiv.className = "question";
+
+        const questionTitle = document.createElement("h2");
+        questionTitle.textContent = `Вопрос ${index + 1}: ${q.text}`;
+        questionDiv.appendChild(questionTitle);
+
+        const answersDiv = document.createElement("div");
+        answersDiv.className = "answers";
+
+        answerScale.forEach(ans => {
+          const label = document.createElement("label");
+          label.htmlFor = `q${index}_a${ans.value}`;
+
+          const radio = document.createElement("input");
+          radio.type = "radio";
+          radio.name = `q${index}`;
+          radio.id = `q${index}_a${ans.value}`;
+          radio.value = ans.value;
+
+          radio.addEventListener("change", checkAllAnswered);
+
+          const span = document.createElement("span");
+          span.textContent = ans.label;
+
+          label.appendChild(radio);
+          label.appendChild(span);
+          answersDiv.appendChild(label);
+        });
+
+        questionDiv.appendChild(answersDiv);
+        form.appendChild(questionDiv);
+      });
+    }
+
+    // Проверка заполнения всех вопросов
+    function checkAllAnswered() {
+      const totalQuestions = questions.length;
+      let answeredCount = 0;
+      for (let i = 0; i < totalQuestions; i++) {
+        const radios = document.getElementsByName(`q${i}`);
+        if ([...radios].some(radio => radio.checked)) {
+          answeredCount++;
+        }
+      }
+      submitBtn.disabled = answeredCount !== totalQuestions;
+    }
+
+    // Максимальный возможный балл для каждого драйвера
+    function getMaxScorePerDriver() {
+      const counts = {};
+      drivers.forEach(driver => counts[driver] = 0);
+      questions.forEach(q => counts[q.driver]++);
+      for (let driver in counts) {
+        counts[driver] *= 2; // max балл за вопрос (ДА = 2)
+      }
+      return counts;
+    }
+
+    // Подсчет результатов и вывод с диаграммой
+    function calculateResults() {
+      const scores = {};
+      drivers.forEach(driver => scores[driver] = 0);
+
+      questions.forEach((q, i) => {
+        const radios = document.getElementsByName(`q${i}`);
+        for (const radio of radios) {
+          if (radio.checked) {
+            scores[q.driver] += parseInt(radio.value);
+            break;
+          }
+        }
+      });
+
+      const maxScores = getMaxScorePerDriver();
+
+      let resultHTML = "<h2>Результаты теста</h2>";
+
+      drivers.forEach(driver => {
+        const score = scores[driver];
+        const maxScore = maxScores[driver];
+        const percent = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+
+        resultHTML += `
+          <div class="driver-state">
+            <h3>${driver}: ${score} / ${maxScore} (${percent}%)</h3>
+            <div class="bar-container" aria-label="Диаграмма для ${driver}">
+              <div class="bar ${driverColors[driver]}" style="width: ${percent}%" title="${percent}%">${percent}%</div>
+            </div>
+          </div>
+        `;
+      });
+
+      resultDiv.innerHTML = resultHTML;
+      resultDiv.style.display = "block";
+      resultDiv.scrollIntoView({ behavior: "smooth" });
+    }
+
+    renderQuestions();
+
+    submitBtn.addEventListener("click", e => {
+      e.preventDefault();
+      calculateResults();
+    });
+  </script>
+</body>
+</html>
